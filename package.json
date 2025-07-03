@@ -1,12 +1,12 @@
 {
-  "name": "commanderjs-template",
+  "name": "claude-code-generic-hooks",
   "version": "0.1.0",
   "author": "Mike Bannister <notimpossiblemike@gmail.com>",
   "license": "MIT",
-  "description": "CommanderJS CLI Template",
+  "description": "Claude Code Generic Hooks",
   "type": "module",
   "bin": {
-    "commanderjs-template": "./dist/cli.js"
+    "claude-code-generic-hooks": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsup",
