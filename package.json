@@ -1,6 +1,6 @@
 {
   "name": "claude-code-generic-hooks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Mike Bannister <notimpossiblemike@gmail.com>",
   "license": "MIT",
   "description": "Claude Code Generic Hooks",
