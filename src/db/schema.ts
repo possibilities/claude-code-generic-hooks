@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm'
 export const entries = sqliteTable('entries', {
   id: text('id').primaryKey(),
   data: text('data').notNull(),
+  cwd: text('cwd').notNull(),
   created: integer('created', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),

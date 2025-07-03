@@ -84,6 +84,7 @@ export async function storeCommand(dbPath: string): Promise<void> {
         await db.insert(entries).values({
           id,
           data: jsonData,
+          cwd: process.cwd(),
           created: new Date(),
         })
 

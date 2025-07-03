@@ -16,6 +16,7 @@ export const migrations = {
     '0000_lush_pestilence': `CREATE TABLE \`entries\` (
 \t\`id\` text PRIMARY KEY NOT NULL,
 \t\`data\` text NOT NULL,
+\t\`cwd\` text NOT NULL,
 \t\`created\` integer DEFAULT (unixepoch()) NOT NULL
 );`,
   },
