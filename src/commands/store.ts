@@ -3,9 +3,9 @@ import { dirname } from 'path'
 import { mkdirSync } from 'fs'
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 import { ulid } from 'ulid'
 import { entries } from '../db/schema.js'
+import { migrations } from '../db/migrations.js'
 
 export async function storeCommand(dbPath: string): Promise<void> {
   const absolutePath = dbPath.startsWith('/')
@@ -28,7 +28,30 @@ export async function storeCommand(dbPath: string): Promise<void> {
       )
       .get() === undefined
   ) {
-    await migrate(db, { migrationsFolder: './drizzle' })
+    const createMigrationsTable = `
+      CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hash TEXT NOT NULL,
+        created_at INTEGER
+      )
+    `
+    sqlite.prepare(createMigrationsTable).run()
+
+    for (const [tag, sql] of Object.entries(migrations.migrations)) {
+      const hash = tag
+      const existing = sqlite
+        .prepare('SELECT hash FROM __drizzle_migrations WHERE hash = ?')
+        .get(hash)
+
+      if (!existing) {
+        sqlite.prepare(sql).run()
+        sqlite
+          .prepare(
+            'INSERT INTO __drizzle_migrations (hash, created_at) VALUES (?, ?)',
+          )
+          .run(hash, Date.now())
+      }
+    }
   }
 
   return new Promise((resolve, reject) => {
