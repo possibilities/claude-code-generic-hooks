@@ -1,0 +1,31 @@
+{
+  "name": "commanderjs-template",
+  "version": "0.1.0",
+  "author": "Mike Bannister <notimpossiblemike@gmail.com>",
+  "license": "MIT",
+  "description": "CommanderJS CLI Template",
+  "type": "module",
+  "bin": {
+    "commanderjs-template": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "nodemon --watch src/ --ext ts --exec tsup",
+    "format": "prettier --write \"**/*.{js,mjs,jsx,ts,tsx,json,md,mdx,css,yml,yaml}\"",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch"
+  },
+  "dependencies": {
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
