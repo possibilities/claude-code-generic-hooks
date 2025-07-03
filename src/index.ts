@@ -1,6 +1,7 @@
 import { Command } from 'commander'
 import packageJson from '../package.json' assert { type: 'json' }
 import { storeCommand } from './commands/store.js'
+import { yoloCommand } from './commands/yolo.js'
 
 async function main() {
   const program = new Command()
@@ -16,6 +17,13 @@ async function main() {
     .argument('<database>', 'Path to SQLite database file')
     .action(async (database: string) => {
       await storeCommand(database)
+    })
+
+  program
+    .command('yolo')
+    .description('Approve or reject tool usage based on JSON input from stdin')
+    .action(async () => {
+      await yoloCommand()
     })
 
   try {
