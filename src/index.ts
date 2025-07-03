@@ -1,5 +1,6 @@
 import { Command } from 'commander'
 import packageJson from '../package.json' assert { type: 'json' }
+import { storeCommand } from './commands/store.js'
 
 async function main() {
   const program = new Command()
@@ -8,8 +9,13 @@ async function main() {
     .name('claude-code-generic-hooks')
     .description('Generic hooks for Claude Code')
     .version(packageJson.version)
-    .action(() => {
-      console.log('hello world')
+
+  program
+    .command('store')
+    .description('Store JSON data from stdin into SQLite database')
+    .argument('<database>', 'Path to SQLite database file')
+    .action(async (database: string) => {
+      await storeCommand(database)
     })
 
   try {
