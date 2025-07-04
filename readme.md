@@ -5,7 +5,7 @@
 ### store
 
 ```bash
-claude-generic-hooks store /path/to/db.sqlite
+claude-code-generic-hooks store /path/to/db.sqlite
 ```
 
 Stores hook metadata in an SQLite database
@@ -13,7 +13,7 @@ Stores hook metadata in an SQLite database
 ### yolo
 
 ```bash
-claude-generic-hooks yolo
+claude-code-generic-hooks yolo
 ```
 
 Autoapproves everything except for accepting a plan. Similar to `--dangerously-skip-permissions` but works in plan mode.
@@ -29,11 +29,11 @@ Autoapproves everything except for accepting a plan. Similar to `--dangerously-s
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
           },
           {
             "type": "command",
-            "command": "npx claude-generic-hooks yolo"
+            "command": "npx claude-code-generic-hooks yolo"
           }
         ]
       }
@@ -44,7 +44,7 @@ Autoapproves everything except for accepting a plan. Similar to `--dangerously-s
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
           }
         ]
       }
@@ -55,7 +55,7 @@ Autoapproves everything except for accepting a plan. Similar to `--dangerously-s
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
           }
         ]
       }
@@ -66,7 +66,7 @@ Autoapproves everything except for accepting a plan. Similar to `--dangerously-s
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
           }
         ]
       }
@@ -77,7 +77,7 @@ Autoapproves everything except for accepting a plan. Similar to `--dangerously-s
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
           }
         ]
       }
