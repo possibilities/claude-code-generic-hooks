@@ -48,7 +48,7 @@ export async function storeCommand(dbPath: string): Promise<void> {
         .get(hash)
 
       if (!existing) {
-        sqlite.prepare(sql).run()
+        sqlite.exec(sql)
         sqlite
           .prepare(
             'INSERT INTO __drizzle_migrations (hash, created_at) VALUES (?, ?)',
