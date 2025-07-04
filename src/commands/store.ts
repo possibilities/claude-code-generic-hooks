@@ -18,6 +18,10 @@ export async function storeCommand(dbPath: string): Promise<void> {
   }
 
   const sqlite = new Database(absolutePath)
+
+  sqlite.pragma('journal_mode = WAL')
+  sqlite.pragma('busy_timeout = 5000')
+
   const db = drizzle(sqlite)
 
   if (
@@ -81,14 +85,41 @@ export async function storeCommand(dbPath: string): Promise<void> {
 
         const id = ulid()
 
-        await db.insert(entries).values({
-          id,
-          data: jsonData,
-          cwd: process.cwd(),
-          created: new Date(),
-        })
+        const maxRetries = 5
+        let retryCount = 0
+        let success = false
 
-        console.log(`Stored entry with ID: ${id}`)
+        while (retryCount < maxRetries && !success) {
+          try {
+            sqlite.prepare('BEGIN IMMEDIATE').run()
+
+            await db.insert(entries).values({
+              id,
+              data: jsonData,
+              cwd: process.cwd(),
+              created: new Date(),
+            })
+
+            sqlite.prepare('COMMIT').run()
+            success = true
+            console.log(`Stored entry with ID: ${id}`)
+          } catch (error: any) {
+            sqlite.prepare('ROLLBACK').run()
+
+            if (error.code === 'SQLITE_BUSY' && retryCount < maxRetries - 1) {
+              retryCount++
+              const waitTime = Math.min(100 * Math.pow(2, retryCount), 1000)
+              await new Promise(resolve => setTimeout(resolve, waitTime))
+            } else {
+              throw error
+            }
+          }
+        }
+
+        if (!success) {
+          throw new Error('Failed to store entry after maximum retries')
+        }
+
         sqlite.close()
         resolve()
       } catch (error) {
