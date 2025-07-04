@@ -102,7 +102,7 @@ export async function storeCommand(dbPath: string): Promise<void> {
 
             sqlite.prepare('COMMIT').run()
             success = true
-            console.log(`Stored entry with ID: ${id}`)
+            console.error(`Stored entry with ID: ${id}`)
           } catch (error: any) {
             sqlite.prepare('ROLLBACK').run()
 
