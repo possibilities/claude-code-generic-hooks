@@ -5,7 +5,7 @@
 ### store
 
 ```bash
-claude-code-generic-hooks store /path/to/db.sqlite
+claude-generic-hooks store /path/to/db.sqlite
 ```
 
 Stores hook metadata in an SQLite database
@@ -13,7 +13,7 @@ Stores hook metadata in an SQLite database
 ### yolo
 
 ```bash
-claude-code-generic-hooks yolo
+claude-generic-hooks yolo
 ```
 
 Autoapproves everything except for accepting a plan. Similar to `--dangerously-skip-permissions` but works in plan mode.
@@ -31,11 +31,11 @@ You can use `/hooks` in claude to configure hooks or edit one of the settings fi
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
           },
           {
             "type": "command",
-            "command": "npx claude-code-generic-hooks yolo"
+            "command": "npx claude-generic-hooks yolo"
           }
         ]
       }
@@ -46,7 +46,7 @@ You can use `/hooks` in claude to configure hooks or edit one of the settings fi
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
           }
         ]
       }
@@ -57,7 +57,7 @@ You can use `/hooks` in claude to configure hooks or edit one of the settings fi
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
           }
         ]
       }
@@ -68,7 +68,7 @@ You can use `/hooks` in claude to configure hooks or edit one of the settings fi
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
           }
         ]
       }
@@ -79,12 +79,11 @@ You can use `/hooks` in claude to configure hooks or edit one of the settings fi
         "hooks": [
           {
             "type": "command",
-            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
+            "command": "npx claude-generic-hooks store ~/.claude/hooks.db"
           }
         ]
       }
     ]
   }
 }
-
 ```

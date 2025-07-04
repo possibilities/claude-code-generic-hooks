@@ -7,8 +7,8 @@ async function main() {
   const program = new Command()
 
   program
-    .name('claude-code-generic-hooks')
-    .description('Generic hooks for Claude Code')
+    .name('claude-generic-hooks')
+    .description('Generic hooks for Claude')
     .version(packageJson.version)
 
   program

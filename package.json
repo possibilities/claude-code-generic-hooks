@@ -6,7 +6,7 @@
   "description": "Claude Code Generic Hooks",
   "type": "module",
   "bin": {
-    "claude-code-generic-hooks": "./dist/cli.js"
+    "claude-generic-hooks": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsup",
