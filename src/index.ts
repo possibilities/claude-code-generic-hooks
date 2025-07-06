@@ -36,7 +36,8 @@ async function main() {
   } catch (error: any) {
     if (
       error.code === 'commander.help' ||
-      error.code === 'commander.helpDisplayed'
+      error.code === 'commander.helpDisplayed' ||
+      error.code === 'commander.version'
     ) {
       process.exit(0)
     }
