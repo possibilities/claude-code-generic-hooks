@@ -3,7 +3,7 @@
   "version": "0.1.4",
   "author": "Mike Bannister <notimpossiblemike@gmail.com>",
   "license": "MIT",
-  "description": "Claude Code Generic Hooks",
+  "description": "Claude Code Generic Hooks CLI",
   "type": "module",
   "bin": {
     "claude-code-generic-hooks": "./dist/cli.js"
