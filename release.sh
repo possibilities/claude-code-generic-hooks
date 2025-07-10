@@ -20,6 +20,22 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
     exit 1
 fi
 
+IS_PRIVATE=$(gh repo view --json isPrivate --jq '.isPrivate')
+if [[ "$IS_PRIVATE" == "true" ]]; then
+    echo "⚠️  Warning: Repository is private. Make it public? (y/N)"
+    read -r MAKE_PUBLIC
+    if [[ "$MAKE_PUBLIC" == "y" ]]; then
+        echo "🔓 Making repository public..."
+        gh repo edit --visibility public --accept-visibility-change-consequences
+        echo "✅ Repository is now public"
+    else
+        echo "❌ Error: Cannot release to a private repository. Aborting."
+        exit 1
+    fi
+else
+    echo "✅ Repository is public"
+fi
+
 echo "🔄 Pulling latest changes..."
 git pull origin main
 
