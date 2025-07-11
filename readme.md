@@ -81,6 +81,17 @@ Autoapproves everything except for accepting a plan. Similar to `--dangerously-s
           }
         ]
       }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "auto|manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
+          }
+        ]
+      }
     ]
   }
 }
