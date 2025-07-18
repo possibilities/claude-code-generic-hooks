@@ -71,6 +71,17 @@ Autoapproves everything except for accepting a plan. Similar to `--dangerously-s
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude-code-generic-hooks store ~/.claude/hooks.db"
+          }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "matcher": "",
