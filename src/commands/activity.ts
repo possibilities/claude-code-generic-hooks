@@ -210,7 +210,7 @@ export async function activityStartCommand(dbPath: string): Promise<void> {
 
         const notificationId = await sendNotification(
           `🟡 ${projectName}`,
-          'Activity in progress...',
+          'Claude is working...',
           { persistent: true, returnId: true },
         )
 
