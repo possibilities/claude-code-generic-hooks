@@ -392,7 +392,7 @@ export async function activityStopCommand(dbPath: string): Promise<void> {
         if (projectRecordBroken || globalRecordBroken) {
           notificationTitle = `🏆 ${projectName}`
           if (globalRecordBroken) {
-            notificationMessage += '\n🌍 NEW GLOBAL RECORD!'
+            notificationMessage += '\n🌍 New system record!'
           } else if (projectRecordBroken) {
             notificationMessage += '\n📊 New project record!'
           }
