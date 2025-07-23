@@ -9,7 +9,11 @@ import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { desc, eq } from 'drizzle-orm'
 import { ulid } from 'ulid'
-import { activities } from '../db/activitySchema.js'
+import {
+  activities,
+  activityRecords,
+  globalActivityRecord,
+} from '../db/activitySchema.js'
 import { activityMigrations } from '../db/activityMigrations.js'
 import packageJson from '../../package.json' assert { type: 'json' }
 
@@ -253,10 +257,14 @@ export async function activityStopCommand(dbPath: string): Promise<void> {
       .get()
 
     let durationMessage = ''
+    let durationMs = 0
+    let startActivityId = ''
+
     if (latestStart) {
       const startTime = latestStart.created.getTime()
       const now = Date.now()
-      const durationMs = now - startTime
+      durationMs = now - startTime
+      startActivityId = latestStart.id
       const durationMinutes = Math.floor(durationMs / 60000)
       const durationSeconds = Math.floor((durationMs % 60000) / 1000)
 
@@ -279,6 +287,12 @@ export async function activityStopCommand(dbPath: string): Promise<void> {
     const maxRetries = 5
     let retryCount = 0
     let success = false
+    let projectRecordBroken = false
+    let globalRecordBroken = false
+    let previousProjectRecord: typeof activityRecords.$inferSelect | undefined
+    let previousGlobalRecord:
+      | typeof globalActivityRecord.$inferSelect
+      | undefined
 
     while (retryCount < maxRetries && !success) {
       try {
@@ -293,16 +307,96 @@ export async function activityStopCommand(dbPath: string): Promise<void> {
           created: new Date(),
         })
 
+        if (durationMs > 0 && startActivityId) {
+          previousProjectRecord = await db
+            .select()
+            .from(activityRecords)
+            .where(eq(activityRecords.project, projectName))
+            .get()
+
+          if (
+            !previousProjectRecord ||
+            durationMs > previousProjectRecord.longestDurationMs
+          ) {
+            projectRecordBroken = true
+
+            if (previousProjectRecord) {
+              await db
+                .update(activityRecords)
+                .set({
+                  longestDurationMs: durationMs,
+                  recordSetAt: new Date(),
+                  activityStartId: startActivityId,
+                  activityStopId: id,
+                })
+                .where(eq(activityRecords.project, projectName))
+            } else {
+              await db.insert(activityRecords).values({
+                id: ulid(),
+                project: projectName,
+                longestDurationMs: durationMs,
+                recordSetAt: new Date(),
+                activityStartId: startActivityId,
+                activityStopId: id,
+              })
+            }
+          }
+
+          previousGlobalRecord = await db
+            .select()
+            .from(globalActivityRecord)
+            .where(eq(globalActivityRecord.id, 'global'))
+            .get()
+
+          if (
+            !previousGlobalRecord ||
+            durationMs > previousGlobalRecord.longestDurationMs
+          ) {
+            globalRecordBroken = true
+
+            if (previousGlobalRecord) {
+              await db
+                .update(globalActivityRecord)
+                .set({
+                  longestDurationMs: durationMs,
+                  recordSetAt: new Date(),
+                  project: projectName,
+                  activityStartId: startActivityId,
+                  activityStopId: id,
+                })
+                .where(eq(globalActivityRecord.id, 'global'))
+            } else {
+              await db.insert(globalActivityRecord).values({
+                id: 'global',
+                longestDurationMs: durationMs,
+                recordSetAt: new Date(),
+                project: projectName,
+                activityStartId: startActivityId,
+                activityStopId: id,
+              })
+            }
+          }
+        }
+
         sqlite.prepare('COMMIT').run()
         success = true
         console.error(`Activity stopped with ID: ${id}`)
 
         const existingNotificationId = loadNotificationId(projectName)
 
-        const notificationTitle = `✅ ${projectName}`
-        const notificationMessage = durationMessage
+        let notificationTitle = `✅ ${projectName}`
+        let notificationMessage = durationMessage
           ? `Activity completed - ${durationMessage}`
           : 'Activity completed'
+
+        if (projectRecordBroken || globalRecordBroken) {
+          notificationTitle = `🏆 ${projectName}`
+          if (globalRecordBroken) {
+            notificationMessage += '\n🌍 NEW GLOBAL RECORD!'
+          } else if (projectRecordBroken) {
+            notificationMessage += '\n📊 New project record!'
+          }
+        }
 
         await sendNotification(notificationTitle, notificationMessage, {
           persistent: true,
