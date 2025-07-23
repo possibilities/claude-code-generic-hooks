@@ -209,7 +209,7 @@ export async function activityStartCommand(dbPath: string): Promise<void> {
         console.error(`Activity started with ID: ${id}`)
 
         const notificationId = await sendNotification(
-          `🔴 ${projectName}`,
+          `🟡 ${projectName}`,
           'Activity in progress...',
           { persistent: true, returnId: true },
         )
