@@ -6,6 +6,7 @@ import {
   activityStartCommand,
   activityStopCommand,
 } from './commands/activity.js'
+import { extractErrorMessage } from './utils/errorHandling.js'
 
 async function main() {
   const program = new Command()
@@ -65,7 +66,7 @@ async function main() {
     ) {
       process.exit(0)
     }
-    console.error('Error:', error.message || error)
+    console.error('Error:', extractErrorMessage(error))
     process.exit(1)
   }
 }

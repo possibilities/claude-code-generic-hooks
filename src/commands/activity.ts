@@ -9,6 +9,7 @@ import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { desc, eq } from 'drizzle-orm'
 import { ulid } from 'ulid'
+import { extractErrorMessage } from '../utils/errorHandling.js'
 import {
   activities,
   activityRecords,
@@ -37,7 +38,7 @@ async function sendNotification(
     let command = `notify-send`
 
     if (options.persistent) {
-      command += ` --hint=int:transient:0`
+      command += ` --expire-time=0`
     }
 
     if (options.replaceId !== undefined) {
@@ -174,7 +175,9 @@ async function handleStdinData(): Promise<string> {
     })
 
     process.stdin.on('error', error => {
-      reject(new Error(`Error reading from stdin: ${error.message}`))
+      reject(
+        new Error(`Error reading from stdin: ${extractErrorMessage(error)}`),
+      )
     })
   })
 }

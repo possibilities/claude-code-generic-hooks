@@ -6,6 +6,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { ulid } from 'ulid'
 import { entries } from '../db/schema.js'
 import { migrations } from '../db/migrations.js'
+import { extractErrorMessage } from '../utils/errorHandling.js'
 
 export async function storeCommand(dbPath: string): Promise<void> {
   const absolutePath = dbPath.startsWith('/')
@@ -130,7 +131,7 @@ export async function storeCommand(dbPath: string): Promise<void> {
     })
 
     process.stdin.on('error', error => {
-      console.error('Error reading from stdin:', error.message)
+      console.error('Error reading from stdin:', extractErrorMessage(error))
       sqlite.close()
       reject(error)
     })
