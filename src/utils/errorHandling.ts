@@ -1,6 +1,6 @@
-// https://gist.github.com/possibilities/3ad34c6c931884219d6890d3ac98b044
-// If we keep seeing the error above we can remove this helper and go back to
-// displaying errors directly.
+//! https://gist.github.com/possibilities/3ad34c6c931884219d6890d3ac98b044
+//! If we keep seeing the error above we can remove this helper and go back to
+//! displaying errors directly.
 export function extractErrorMessage(error: unknown): string {
   if (error === null || error === undefined) {
     return 'Unknown error'
