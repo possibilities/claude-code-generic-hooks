@@ -1,8 +1,10 @@
 import { existsSync } from 'fs'
 import { dirname } from 'path'
-import { mkdirSync } from 'fs'
+import { mkdirSync, writeFileSync, readFileSync, unlinkSync } from 'fs'
 import { exec } from 'child_process'
 import { promisify } from 'util'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { desc, eq } from 'drizzle-orm'
@@ -13,11 +15,79 @@ import packageJson from '../../package.json' assert { type: 'json' }
 
 const execAsync = promisify(exec)
 
-async function sendNotification(title: string, message: string) {
+interface NotificationOptions {
+  persistent?: boolean
+  replaceId?: number
+  returnId?: boolean
+}
+
+async function sendNotification(
+  title: string,
+  message: string,
+  options: NotificationOptions = {},
+): Promise<number | undefined> {
   try {
-    await execAsync(`notify-send "${title}" "${message}"`)
+    const escapedTitle = title.replace(/"/g, '\\"')
+    const escapedMessage = message.replace(/"/g, '\\"')
+
+    let command = `notify-send`
+
+    if (options.persistent) {
+      command += ` --hint=int:transient:0`
+    }
+
+    if (options.replaceId !== undefined) {
+      command += ` --replace-id=${options.replaceId}`
+    }
+
+    if (options.returnId) {
+      command += ` --print-id`
+    }
+
+    command += ` "${escapedTitle}" "${escapedMessage}"`
+
+    const { stdout } = await execAsync(command)
+
+    if (options.returnId && stdout) {
+      return parseInt(stdout.trim(), 10)
+    }
   } catch (error) {
     console.error('Failed to send notification:', error)
+  }
+  return undefined
+}
+
+function getNotificationIdPath(projectName: string): string {
+  const safeName = projectName.replace(/[^a-zA-Z0-9-_]/g, '_')
+  return join(tmpdir(), `activity_notification_${safeName}.id`)
+}
+
+function saveNotificationId(projectName: string, id: number): void {
+  const path = getNotificationIdPath(projectName)
+  writeFileSync(path, id.toString(), 'utf-8')
+}
+
+function loadNotificationId(projectName: string): number | undefined {
+  const path = getNotificationIdPath(projectName)
+  try {
+    if (existsSync(path)) {
+      const id = parseInt(readFileSync(path, 'utf-8'), 10)
+      return isNaN(id) ? undefined : id
+    }
+  } catch (error) {
+    console.error('Failed to load notification ID:', error)
+  }
+  return undefined
+}
+
+function deleteNotificationId(projectName: string): void {
+  const path = getNotificationIdPath(projectName)
+  try {
+    if (existsSync(path)) {
+      unlinkSync(path)
+    }
+  } catch (error) {
+    console.error('Failed to delete notification ID file:', error)
   }
 }
 
@@ -134,10 +204,15 @@ export async function activityStartCommand(dbPath: string): Promise<void> {
         success = true
         console.error(`Activity started with ID: ${id}`)
 
-        await sendNotification(
-          'Activity Started',
-          `Project "${projectName}" activity has started`,
+        const notificationId = await sendNotification(
+          `🔴 ${projectName}`,
+          'Activity in progress...',
+          { persistent: true, returnId: true },
         )
+
+        if (notificationId) {
+          saveNotificationId(projectName, notificationId)
+        }
       } catch (error: any) {
         sqlite.prepare('ROLLBACK').run()
 
@@ -222,11 +297,19 @@ export async function activityStopCommand(dbPath: string): Promise<void> {
         success = true
         console.error(`Activity stopped with ID: ${id}`)
 
-        const notificationMessage = durationMessage
-          ? `Project "${projectName}" activity has stopped. ${durationMessage}`
-          : `Project "${projectName}" activity has stopped`
+        const existingNotificationId = loadNotificationId(projectName)
 
-        await sendNotification('Activity Stopped', notificationMessage)
+        const notificationTitle = `✅ ${projectName}`
+        const notificationMessage = durationMessage
+          ? `Activity completed - ${durationMessage}`
+          : 'Activity completed'
+
+        await sendNotification(notificationTitle, notificationMessage, {
+          persistent: true,
+          replaceId: existingNotificationId,
+        })
+
+        deleteNotificationId(projectName)
       } catch (error: any) {
         sqlite.prepare('ROLLBACK').run()
 
