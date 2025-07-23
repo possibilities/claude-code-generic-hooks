@@ -2,6 +2,10 @@ import { Command } from 'commander'
 import packageJson from '../package.json' assert { type: 'json' }
 import { storeCommand } from './commands/store.js'
 import { yoloCommand } from './commands/yolo.js'
+import {
+  activityStartCommand,
+  activityStopCommand,
+} from './commands/activity.js'
 
 async function main() {
   const program = new Command()
@@ -24,6 +28,26 @@ async function main() {
     .description('Approve or reject tool usage based on JSON input from stdin')
     .action(async () => {
       await yoloCommand()
+    })
+
+  const activityCommand = program
+    .command('activity')
+    .description('Track activity start and stop events')
+
+  activityCommand
+    .command('start')
+    .description('Record activity start event')
+    .argument('<database>', 'Path to SQLite database file')
+    .action(async (database: string) => {
+      await activityStartCommand(database)
+    })
+
+  activityCommand
+    .command('stop')
+    .description('Record activity stop event and show duration')
+    .argument('<database>', 'Path to SQLite database file')
+    .action(async (database: string) => {
+      await activityStopCommand(database)
     })
 
   try {
