@@ -46,7 +46,7 @@ export async function yoloCommand(): Promise<void> {
           return
         }
 
-        if (data.tool_name === 'exit_plan_mode') {
+        if (data.tool_name === 'ExitPlanMode') {
           console.log(
             JSON.stringify({
               decision: undefined,
