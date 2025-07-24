@@ -272,9 +272,9 @@ export async function activityStopCommand(dbPath: string): Promise<void> {
       const durationSeconds = Math.floor((durationMs % 60000) / 1000)
 
       if (durationMinutes > 0) {
-        durationMessage = `Duration: ${durationMinutes}m ${durationSeconds}s`
+        durationMessage = `Claude worked for ${durationMinutes}m ${durationSeconds}s`
       } else {
-        durationMessage = `Duration: ${durationSeconds}s`
+        durationMessage = `Claude worked for ${durationSeconds}s`
       }
 
       console.error(
@@ -388,9 +388,7 @@ export async function activityStopCommand(dbPath: string): Promise<void> {
         const existingNotificationId = loadNotificationId(projectName)
 
         let notificationTitle = `✅ ${projectName}`
-        let notificationMessage = durationMessage
-          ? `Activity completed - ${durationMessage}`
-          : 'Activity completed'
+        let notificationMessage = durationMessage || 'Activity completed'
 
         if (projectRecordBroken || globalRecordBroken) {
           notificationTitle = `🏆 ${projectName}`
