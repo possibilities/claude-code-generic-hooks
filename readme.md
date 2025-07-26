@@ -1,5 +1,7 @@
 # Claude Generic Hooks
 
+[![npm version](https://badge.fury.io/js/claude-code-generic-hooks.svg)](https://www.npmjs.com/package/claude-code-generic-hooks)
+
 ## Commands
 
 ### store
