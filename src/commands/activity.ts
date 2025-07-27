@@ -1,5 +1,5 @@
 import { existsSync } from 'fs'
-import { dirname } from 'path'
+import { dirname, basename } from 'path'
 import { mkdirSync, writeFileSync, readFileSync, unlinkSync } from 'fs'
 import { exec } from 'child_process'
 import { promisify } from 'util'
@@ -16,9 +16,27 @@ import {
   globalActivityRecord,
 } from '../db/activitySchema.js'
 import { activityMigrations } from '../db/activityMigrations.js'
-import packageJson from '../../package.json' assert { type: 'json' }
 
 const execAsync = promisify(exec)
+
+function getProjectName(): string {
+  const cwd = process.cwd()
+  const packageJsonPath = join(cwd, 'package.json')
+
+  try {
+    if (existsSync(packageJsonPath)) {
+      const packageJsonContent = readFileSync(packageJsonPath, 'utf-8')
+      const packageData = JSON.parse(packageJsonContent)
+      if (packageData.name) {
+        return packageData.name
+      }
+    }
+  } catch (error) {
+    console.error('Failed to read package.json:', error)
+  }
+
+  return basename(cwd)
+}
 
 interface NotificationOptions {
   persistent?: boolean
@@ -184,7 +202,7 @@ async function handleStdinData(): Promise<string> {
 
 export async function activityStartCommand(dbPath: string): Promise<void> {
   const { sqlite, db } = setupDatabase(dbPath)
-  const projectName = packageJson.name
+  const projectName = getProjectName()
 
   try {
     const jsonData = await handleStdinData()
@@ -246,7 +264,7 @@ export async function activityStartCommand(dbPath: string): Promise<void> {
 
 export async function activityStopCommand(dbPath: string): Promise<void> {
   const { sqlite, db } = setupDatabase(dbPath)
-  const projectName = packageJson.name
+  const projectName = getProjectName()
 
   try {
     const jsonData = await handleStdinData()
