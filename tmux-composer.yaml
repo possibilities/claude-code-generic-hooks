@@ -1,2 +1,0 @@
-commands:
-  run-agent: dirty-confirm && claude /work-on-typescript-cli --mcp-config ~/code/dotfiles/claude/mcps.json --settings ~/code/dotfiles/claude/settings.json
