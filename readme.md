@@ -20,26 +20,6 @@ claude-code-generic-hooks yolo
 
 Autoapproves everything except for accepting a plan. Similar to `--dangerously-skip-permissions` but works in plan mode.
 
-### activity
-
-Track Claude Code work sessions activity with desktop notifications
-
-#### activity start
-
-```bash
-claude-code-generic-hooks activity start /path/to/activity.db
-```
-
-Starts tracking a new activity session
-
-#### activity stop
-
-```bash
-claude-code-generic-hooks activity stop /path/to/activity.db
-```
-
-Stops the current activity session
-
 ## Example configurations
 
 ### Store command - Log all hook events to a database:
@@ -149,48 +129,6 @@ Stops the current activity session
           {
             "type": "command",
             "command": "npx claude-code-generic-hooks yolo"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### Activity command - Track work sessions with notifications:
-
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npx claude-code-generic-hooks activity start ~/.claude/activity.db"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npx claude-code-generic-hooks activity start ~/.claude/activity.db"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npx claude-code-generic-hooks activity stop ~/.claude/activity.db"
           }
         ]
       }
